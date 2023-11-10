@@ -2,6 +2,7 @@ package com.spring.workshopmongo.config;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class Instantiation implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("OI");
+		System.out.println("Iniciando a inicialização dos dados...");
+
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -38,11 +40,17 @@ public class Instantiation implements CommandLineRunner {
 
 		userRepository.saveAll(Arrays.asList(maria, alex, bob));
 
-		Post post1 = new Post(null, sdf.parse("21/11/2023"), "Partiu viagem", "Vou viajar para São Paulo. Abraços!",
-				new AuthorDTO(maria));
-		Post post2 = new Post(null, sdf.parse("23/11/2023"), "Bom dia", "Acordei feliz hoje!", new AuthorDTO(maria));
+		List<Post> posts = Arrays.asList(
+				new Post(null, sdf.parse("21/11/2023"), "Partiu viagem", "Vou viajar para São Paulo. Abraços!",
+						new AuthorDTO(maria)),
+				new Post(null, sdf.parse("23/11/2023"), "Bom dia", "Acordei feliz hoje!", new AuthorDTO(maria)));
 
-		postRepository.saveAll(Arrays.asList(post1, post2));
+		postRepository.saveAll(posts);
+
+		maria.getPosts().addAll(posts);
+		userRepository.save(maria);
+
+		System.out.println("Dados iniciais foram inseridos com sucesso.");
 	}
 
 }
